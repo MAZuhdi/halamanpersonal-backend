@@ -19,13 +19,14 @@ use Illuminate\Support\Facades\Route;
 
 //Public routes
 Route::post('/contents', [ContentController::class, 'store' ]);
-Route::get('/contents/{username}', [ContentController::class, 'index' ]);
-Route::get('/{type}/{username}', [ContentController::class, 'listing' ]);
+Route::get('/{username}/{type}/{slug}', [ContentController::class, 'show' ]);
+Route::get('/{username}/contents', [ContentController::class, 'index' ]);
+Route::get('/{username}/{type}', [ContentController::class, 'listing' ]);
 
 Route::post('/register', [AuthController::class, 'register' ]);
 Route::get('/{username}', [UserController::class, 'index' ]);
 
-Route::get('/socmed/{username}', [UserController::class, 'getSocmed' ]);
+Route::get('/{username}/socmed', [UserController::class, 'getSocmed' ]);
 
 //Must be guarded routes
 Route::delete('/contents/{slug}', [ContentController::class, 'destroy' ]);

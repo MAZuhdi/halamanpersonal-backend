@@ -17,4 +17,15 @@ class UserController extends Controller
             'data' => $user
         ]);
     }
+
+    public function socmed($username)
+    {
+        $user = User::where('username', $username)->first();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => "$username's social media ",
+            'data' => $user
+        ]);
+    }
 }
