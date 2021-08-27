@@ -3,11 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\Content;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class ContentController extends Controller
 {
+
+    /**
+     * Return Boolean which username is exist or not, if exist return false
+     *
+     * @param  str $username
+     * @return bool
+     */
+    public function invalidUsername($username)
+    {
+        $user = User::where('username', $username)->get();
+        if ($user->isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
      /**
      * Return random number of with pre-defined length.
      *
@@ -31,6 +49,11 @@ class ContentController extends Controller
      */
     public function index($username)
     {
+
+        if ($this->invalidUsername($username)) {
+            return response('Username not Found', 404);
+        }
+
         $contents = Content::where('username', $username)->get();
 
         return response()->json([
@@ -46,8 +69,12 @@ class ContentController extends Controller
      * @param  str $username
      * @return \Illuminate\Http\Response
      */
-    public function listing($type, $username)
+    public function listing($username, $type)
     {
+        if ($this->invalidUsername($username)) {
+            return response('Username not Found', 404);
+        }
+
         $contents = Content::where('username', $username)->where('type', $type)->get();
 
         return response()->json([
@@ -109,9 +136,21 @@ class ContentController extends Controller
      * @param  \App\Models\Content  $content
      * @return \Illuminate\Http\Response
      */
-    public function show(Content $content)
+    public function show($username, $type, $slug)
     {
-        //
+        if ($this->invalidUsername($username)) {
+            return response('Username not Found', 404);
+        }
+
+        $content = Content::where('username', $username)
+                            ->where('type', $type)
+                            ->where('slug', $slug)->first();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => "Konten $slug berhasil didapat",
+            'data' => $content
+        ]);
     }
 
     /**
@@ -139,7 +178,7 @@ class ContentController extends Controller
         if (is_null($content)) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Slug content tidak ditemukan'
+                'message' => "$slug content tidak ditemukan"
             ]);
         }
 
@@ -153,7 +192,6 @@ class ContentController extends Controller
         ]);
 
         $newSlug = Str::of($validated['title'])->slug('-');
-        // $randomnum = random_int(1000,9999);
         $randomnum = $this->randomNumber(4);
 
         $newSlug = $newSlug."-".$randomnum;
@@ -183,7 +221,7 @@ class ContentController extends Controller
      */
     public function destroy($slug)
     {
-        $deletedRows  = Content::where('slug', $slug)->delete();
+        Content::where('slug', $slug)->delete();
 
         return response()->json([
             'status' => 'success',
