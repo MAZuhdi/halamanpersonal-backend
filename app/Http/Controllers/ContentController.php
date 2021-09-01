@@ -52,7 +52,9 @@ class ContentController extends Controller
     {
 
         if ($this->invalidUsername($username)) {
-            return response('Username not Found', 404);
+            return response([
+                'status' => 'not found',
+                'message' => 'Username not Found'], 404);
         }
 
         $contents = Content::where('username', $username)->get();
@@ -109,7 +111,6 @@ class ContentController extends Controller
             'title' => 'required',
             'subtitle' => 'string',
             'desc' => 'string',
-            'img'   => 'string',
         ]);
 
         $slug = Str::of($validated['title'])->slug('-');
@@ -118,15 +119,27 @@ class ContentController extends Controller
 
         $slug = $slug . "-" . $randomnum;
 
-        $content = Content::create([
-            'type' => $validated['type'],
-            'username' => $validated['username'],
-            'title' => $validated['title'],
-            'slug' => $slug,
-            'subtitle' => $validated['subtitle'],
-            'desc' => $validated['desc'],
-            'img' => $validated['img'],
-        ]);
+        $type = $request['type'];
+
+        $content = new Content;
+
+        $content->type = $validated['type'];
+        $content->username= $validated['username'];
+        $content->title= $validated['title'];
+        $content->slug= $slug;
+        $content->subtitle= $validated['subtitle'];
+        $content->desc= $validated['desc'];
+
+        if ($uploadedImg = $request->file('img')) {
+            $destinationPath = "images/$type/";
+            $imageName = $slug.'.'.$uploadedImg->extension();
+            $uploadedImg->move(public_path($destinationPath), $imageName);
+            $content->img = $destinationPath.$imageName;
+        } else {
+            $content->photo = "images/$type/photoPlaceholder.jpg";
+        }
+
+        $content->save();
 
         return response($content, 201);
     }
@@ -140,7 +153,7 @@ class ContentController extends Controller
     public function show($username, $type, $slug)
     {
         if ($this->invalidUsername($username)) {
-            return response('Username not Found', 404);
+            return response()->json('Username not Found', 404);
         }
 
         $content = Content::where('username', $username)
@@ -179,7 +192,7 @@ class ContentController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => "$slug content tidak ditemukan"
-            ]);
+            ], 404);
         }
 
         $validated = $request->validate([
@@ -196,22 +209,40 @@ class ContentController extends Controller
 
         $newSlug = $newSlug . "-" . $randomnum;
 
-        $updatedContent = [
-            'type' => $validated['type'],
-            'username' => $validated['username'],
-            'title' => $validated['title'],
-            'slug' => $newSlug,
-            'subtitle' => $validated['subtitle'],
-            'desc' => $validated['desc'],
-            'img' => $validated['img'],
-        ];
-        // dd(Content::where('slug', $slug)->first());
+        $type = $request['type'];
+        
+        $content = Content::where('slug', $slug)->first();
 
-        Content::where('slug', $slug)
-            ->update($updatedContent);
+        $content->type = $validated['type'];
+        $content->username= $validated['username'];
+        $content->title= $validated['title'];
+        $content->slug= $slug;
+        $content->subtitle= $validated['subtitle'];
+        $content->desc= $validated['desc'];
 
+        if ($uploadedImg = $request->file('img')) {
+            $destinationPath = "images/$type/";
+            $imageName = $slug.'.'.$uploadedImg->extension();
+            $uploadedImg->move(public_path($destinationPath), $imageName);
+            $content->img = $destinationPath.$imageName;
+        } else {
+            $content->photo = "images/$type/photoPlaceholder.jpg";
+        }
 
-        return response($updatedContent, 200);
+        $content->save();
+
+        // $updatedContent = [
+        //     'type' => $validated['type'],
+        //     'username' => $validated['username'],
+        //     'title' => $validated['title'],
+        //     'slug' => $newSlug,
+        //     'subtitle' => $validated['subtitle'],
+        //     'desc' => $validated['desc'],
+        //     'img' => $validated['img'],
+        // ];
+        // // dd(Content::where('slug', $slug)->first());
+
+        return response()->json($content, 200);
     }
 
     /**

@@ -75,7 +75,7 @@ class AuthController extends Controller
             'token' => $token,
         ];
 
-        return response($response, 201);
+        return response()->json($response, 201);
     }
 
     public function login(Request $request)
@@ -88,7 +88,7 @@ class AuthController extends Controller
         //check email
         $user = User::where('email', $validated['email'])->first();
         if (!$user || !Hash::check($validated['password'], $user['password'])) {
-            return response([
+            return response()->json([
                 'message' => 'Bad Credentials'
             ],401);
         }
@@ -100,14 +100,14 @@ class AuthController extends Controller
             'token' => $token,
         ];
 
-        return response($response, 201);
+        return response()->json($response);
     }
 
     public function logout(Request $request)
     {
         auth()->user()->tokens()->delete();
 
-        return response([
+        return response()->json([
             'message' => 'Logged Out',
         ], 200);
     }
@@ -117,7 +117,7 @@ class AuthController extends Controller
         $user = User::where('username', $username)->first();
 
         if (!$user) {
-            return response([
+            return response()->json([
                 'status' => 'failed',
                 'message' => "username of $username not found"
             ], 404);

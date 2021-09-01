@@ -66,7 +66,6 @@ class UserController extends Controller
 
            $usersocmed[] = $newdata;
        }
-       
         return response()->json([
             'status' => 'success',
             'message' => "$username's social media ",
