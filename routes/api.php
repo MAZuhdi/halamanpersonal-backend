@@ -37,8 +37,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 //We Need reserved Username such as user, contents
 //Public routes
 Route::get('/{username}', [UserController::class, 'index'])->name('user.get');
-Route::get('/{username}/{type}/{slug}', [ContentController::class, 'show'])->name('content.get.slug');
+Route::get('/{username}/socmed', [UserController::class, 'getSocmed'])->name('socmed.get');
 Route::get('/{username}/contents', [ContentController::class, 'index'])->name('content.get.all');
+Route::get('/{username}/{type}/{slug}', [ContentController::class, 'show'])->name('content.get.slug');
 Route::get('/{username}/{type}', [ContentController::class, 'listing'])->name('content.get.bytype');
 
-Route::get('/{username}/socmed', [UserController::class, 'getSocmed'])->name('socmed.get');
