@@ -26,16 +26,17 @@ class ContentController extends Controller
         }
     }
 
-     /**
+    /**
      * Return random number of with pre-defined length.
      *
      * @param  int $length
      * @return \Illuminate\Http\Response
      */
-    public function randomNumber($length) {
+    public function randomNumber($length)
+    {
         $result = '';
 
-        for($i = 0; $i < $length; $i++) {
+        for ($i = 0; $i < $length; $i++) {
             $result .= mt_rand(0, 9);
         }
 
@@ -75,7 +76,8 @@ class ContentController extends Controller
             return response('Username not Found', 404);
         }
 
-        $contents = Content::where('username', $username)->where('type', $type)->get();
+        $contents = Content::where('username', $username)
+            ->where('type', $type)->get();
 
         return response()->json([
             'status' => 'success',
@@ -91,7 +93,6 @@ class ContentController extends Controller
      */
     public function create()
     {
-
     }
 
     /**
@@ -115,16 +116,16 @@ class ContentController extends Controller
         // $randomnum = random_int(1000,9999);
         $randomnum = $this->randomNumber(4);
 
-        $slug = $slug."-".$randomnum;
+        $slug = $slug . "-" . $randomnum;
 
         $content = Content::create([
             'type' => $validated['type'],
             'username' => $validated['username'],
             'title' => $validated['title'],
             'slug' => $slug,
-            'subtitle'=> $validated['subtitle'],
+            'subtitle' => $validated['subtitle'],
             'desc' => $validated['desc'],
-            'img'=> $validated['img'],
+            'img' => $validated['img'],
         ]);
 
         return response($content, 201);
@@ -143,8 +144,8 @@ class ContentController extends Controller
         }
 
         $content = Content::where('username', $username)
-                            ->where('type', $type)
-                            ->where('slug', $slug)->first();
+            ->where('type', $type)
+            ->where('slug', $slug)->first();
 
         return response()->json([
             'status' => 'success',
@@ -161,7 +162,6 @@ class ContentController extends Controller
      */
     public function edit(Content $content)
     {
-
     }
 
     /**
@@ -194,20 +194,21 @@ class ContentController extends Controller
         $newSlug = Str::of($validated['title'])->slug('-');
         $randomnum = $this->randomNumber(4);
 
-        $newSlug = $newSlug."-".$randomnum;
+        $newSlug = $newSlug . "-" . $randomnum;
 
         $updatedContent = [
             'type' => $validated['type'],
             'username' => $validated['username'],
             'title' => $validated['title'],
             'slug' => $newSlug,
-            'subtitle'=> $validated['subtitle'],
+            'subtitle' => $validated['subtitle'],
             'desc' => $validated['desc'],
-            'img'=> $validated['img'],
+            'img' => $validated['img'],
         ];
         // dd(Content::where('slug', $slug)->first());
 
-        Content::where('slug', $slug)->update($updatedContent);
+        Content::where('slug', $slug)
+            ->update($updatedContent);
 
 
         return response($updatedContent, 200);

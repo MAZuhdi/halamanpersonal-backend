@@ -19,27 +19,40 @@ class AuthController extends Controller
             'email' => 'required|string|unique:users|email',
             'password' => 'required|string',
             'theme_id' => 'required',
+            'photo' => 'required|file|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'username' => $validated['username'],
-            'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
-            'photo' => $request['photo'],
-            'introduction' => $request['introduction'],
-            'more_info' => $request['more_info'],
-            'facebook' => $request['facebook'],
-            'instagram' => $request['instagram'],
-            'linkedin' => $request['linkedin'],
-            'github' => $request['github'],
-            'theme_id' => $request['theme_id'],
-        ]);
+        $user = new User;
+
+        $user->name = $request['name'];
+        $user->username = $request['username'];
+        $user->email = $request['email'];
+        $user->password = $request['password'];
+        $user->introduction = $request['introduction'];
+        $user->more_info = $request['more_info'];
+        $user->facebook = $request['facebook'];
+        $user->instagram = $request['instagram'];
+        $user->linkedin = $request['linkedin'];
+        $user->github = $request['github'];
+        $user->theme_id = $request['theme_id'];
+
+        if ($uploadedPhoto = $request->file('photo')) {
+            $destinationPath = 'images/profile/';
+            $imageName = $request->username.'.'.time().'.'.$uploadedPhoto->extension();  
+            $uploadedPhoto->move(public_path($destinationPath), $imageName);
+            $user->photo = $destinationPath.$imageName;
+        } else {
+            $user->photo = 'images/profile/photoPlaceholder.jpg';
+        }
+        
+        $user->save();
 
         $token = $user->createToken('myapptoken')->plainTextToken;
 
+        $createdUser = User::where('username', $request['username']);
+
         $response = [
-            'user' => $user,
+            'user' => $createdUser,
             'token' => $token,
         ];
 

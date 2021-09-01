@@ -18,6 +18,11 @@ class UserController extends Controller
         ]);
     }
 
+    public function show()
+    {
+        return view('create-user');
+    }
+
     public function socmed($username)
     {
         $user = User::where('username', $username)->first();
