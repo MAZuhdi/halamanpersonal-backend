@@ -30,10 +30,10 @@ class AuthController extends Controller
         $user->password = $request['password'];
         $user->introduction = $request['introduction'];
         $user->more_info = $request['more_info'];
-        $user->facebook = $request['facebook'];
-        $user->instagram = $request['instagram'];
-        $user->linkedin = $request['linkedin'];
-        $user->github = $request['github'];
+        $user->facebook = "https://facebook.com/".$request['facebook'];
+        $user->instagram = "https://instagram.com/".$request['instagram'];
+        $user->linkedin = "https://linkedin.com/in/".$request['linkedin'];
+        $user->github = "https://github.com/".$request['github'];
         $user->theme_id = $request['theme_id'];
 
         if ($uploadedPhoto = $request->file('photo')) {
@@ -49,10 +49,8 @@ class AuthController extends Controller
 
         $token = $user->createToken('myapptoken')->plainTextToken;
 
-        $createdUser = User::where('username', $request['username']);
-
         $response = [
-            'user' => $createdUser,
+            'user' => $user,
             'token' => $token,
         ];
 

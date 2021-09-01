@@ -23,14 +23,54 @@ class UserController extends Controller
         return view('create-user');
     }
 
-    public function socmed($username)
+    public function getsocmed($username)
     {
         $user = User::where('username', $username)->first();
 
+        $usersocmed = [];
+        $n = 0;
+
+       if ($user->facebook) {
+           $newdata = array (
+               'id' => $n+=1,
+               'socmed_name' => 'facebook',
+               'socmed_link' => $user->facebook
+           );
+
+           $usersocmed[] = $newdata;
+       }
+       if ($user->instagram) {
+           $newdata = array (
+               'id' => $n+=1,
+               'socmed_name' => 'instagram',
+               'socmed_link' => $user->instagram
+           );
+
+           $usersocmed[] = $newdata;
+       }
+       if ($user->linkedin) {
+           $newdata = array (
+               'id' => $n+=1,
+               'socmed_name' => 'linkedin',
+               'socmed_link' => $user->linkedin
+           );
+
+           $usersocmed[] = $newdata;
+       }
+       if ($user->github) {
+           $newdata = array (
+               'id' => $n+=1,
+               'socmed_name' => 'github',
+               'socmed_link' => $user->github
+           );
+
+           $usersocmed[] = $newdata;
+       }
+       
         return response()->json([
             'status' => 'success',
             'message' => "$username's social media ",
-            'data' => $user
+            'data' => $usersocmed
         ]);
     }
 }
