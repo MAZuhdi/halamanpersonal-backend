@@ -32,6 +32,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::delete('/contents/{slug}', [ContentController::class, 'destroy']);
     Route::put('/contents/{slug}', [ContentController::class, 'update']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::delete('/{username}', [AuthController::class, 'destroy']);
 });
 
 //We Need reserved Username such as user, contents
