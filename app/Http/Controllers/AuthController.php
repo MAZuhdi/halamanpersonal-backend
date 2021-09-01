@@ -27,15 +27,36 @@ class AuthController extends Controller
         $user->name = $request['name'];
         $user->username = $request['username'];
         $user->email = $request['email'];
-        $user->password = $request['password'];
+        $user->password = bcrypt($request['password']);
         $user->introduction = $request['introduction'];
         $user->more_info = $request['more_info'];
-        $user->facebook = "https://facebook.com/".$request['facebook'];
-        $user->instagram = "https://instagram.com/".$request['instagram'];
-        $user->linkedin = "https://linkedin.com/in/".$request['linkedin'];
-        $user->github = "https://github.com/".$request['github'];
         $user->theme_id = $request['theme_id'];
 
+        if ($user->facebook) {
+            $user->facebook = "https://facebook.com/".$request['facebook'];
+        } else {
+            $user->facebook = $request['facebook'];
+        }
+
+        
+        if ($user->instagram) {
+            $user->instagram = "https://instagram.com/".$request['instagram'];
+        } else {
+            $user->instagram = $request['instagram'];
+        }
+
+        if ($user->linkedin) {
+            $user->linkedin = "https://linkedin.com/in/".$request['linkedin'];
+        } else {
+            $user->linkedin = $request['linkedin'];
+        }
+
+        if ($user->github) {
+            $user->github = "https://github.com/".$request['github'];
+        } else {
+            $user->github = $request['github'];
+        }
+        
         if ($uploadedPhoto = $request->file('photo')) {
             $destinationPath = 'images/profile/';
             $imageName = $request->username.'.'.time().'.'.$uploadedPhoto->extension();  
@@ -89,5 +110,28 @@ class AuthController extends Controller
         return response([
             'message' => 'Logged Out',
         ], 200);
+    }
+
+    public function destroy($username)
+    {
+        $user = User::where('username', $username)->first();
+
+        if (!$user) {
+            return response([
+                'status' => 'failed',
+                'message' => "username of $username not found"
+            ], 404);
+        }
+
+        if ($user->photo != 'images/profile/photoPlaceholder.jpg') {
+            unlink(public_path($user->photo));
+        }
+
+        $user->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => "$username has been deleted"
+        ]);
     }
 }
