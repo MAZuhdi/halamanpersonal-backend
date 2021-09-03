@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 
@@ -18,8 +19,6 @@ class AuthController extends Controller
             'username' => 'required',
             'email' => 'required|string|unique:users|email',
             'password' => 'required|string',
-            'theme_id' => 'required',
-            'photo' => 'required|file|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $user = new User;
@@ -28,30 +27,56 @@ class AuthController extends Controller
         $user->username = $request['username'];
         $user->email = $request['email'];
         $user->password = bcrypt($request['password']);
-        $user->introduction = $request['introduction'];
-        $user->more_info = $request['more_info'];
-        $user->theme_id = $request['theme_id'];
+        
+        $user->save();
 
-        if ($user->facebook) {
+        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        return response()->json([
+            'user' => $user,
+            'token' => $token,
+        ], 201);
+    }
+
+    public function update(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required',
+            'username' => 'required',
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+
+        $user = $request->user();
+
+        $user->name = $request['name'];
+        $user->username = $request['username'];
+        $user->email = $request['email'];
+        $user->password = bcrypt($request['password']);
+        $user->introduction = $request['introduction'];
+        $user->theme_id = $request['theme_id'];
+        $user->headline = $request['headline'];
+        $user->more_info = $request['more_info'];
+    
+        if ($request['facebook']) {
             $user->facebook = "https://facebook.com/".$request['facebook'];
         } else {
             $user->facebook = $request['facebook'];
         }
 
-        
-        if ($user->instagram) {
+        if ($request['instagram']) {
             $user->instagram = "https://instagram.com/".$request['instagram'];
         } else {
             $user->instagram = $request['instagram'];
         }
 
-        if ($user->linkedin) {
+        if ($request['linkedin']) {
             $user->linkedin = "https://linkedin.com/in/".$request['linkedin'];
         } else {
             $user->linkedin = $request['linkedin'];
         }
 
-        if ($user->github) {
+        if ($request['github']) {
             $user->github = "https://github.com/".$request['github'];
         } else {
             $user->github = $request['github'];
@@ -62,20 +87,15 @@ class AuthController extends Controller
             $imageName = $request->username.'.'.time().'.'.$uploadedPhoto->extension();  
             $uploadedPhoto->move(public_path($destinationPath), $imageName);
             $user->photo = $destinationPath.$imageName;
-        } else {
-            $user->photo = 'images/profile/photoPlaceholder.jpg';
         }
-        
+
         $user->save();
 
-        $token = $user->createToken('myapptoken')->plainTextToken;
-
-        $response = [
-            'user' => $user,
-            'token' => $token,
-        ];
-
-        return response()->json($response, 201);
+        return response()->json([
+            'status' => 'succes',
+            'message' => 'profile updated',
+            'data' => "$user"
+        ]);
     }
 
     public function login(Request $request)
@@ -103,7 +123,7 @@ class AuthController extends Controller
         return response()->json($response);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
         auth()->user()->tokens()->delete();
 
@@ -112,16 +132,10 @@ class AuthController extends Controller
         ], 200);
     }
 
-    public function destroy($username)
+    public function destroy(Request $request)
     {
-        $user = User::where('username', $username)->first();
-
-        if (!$user) {
-            return response()->json([
-                'status' => 'failed',
-                'message' => "username of $username not found"
-            ], 404);
-        }
+        $user = $request->user();
+        $username = $user->username;
 
         if ($user->photo != 'images/profile/photoPlaceholder.jpg') {
             unlink(public_path($user->photo));
@@ -133,5 +147,25 @@ class AuthController extends Controller
             'status' => 'success',
             'message' => "$username has been deleted"
         ]);
+
+
+    }
+
+    public function tokenValidity(Request $request)
+    {
+        $id = substr($request['token'], 0, 1);
+
+        $token = substr($request['token'], 2);
+        $hashedToken = hash('sha256', $token);
+
+        $valid = DB::table('personal_access_tokens')
+                ->where('token', "=", $hashedToken)
+                ->get();
+
+        if ($hashedToken == $valid->token) {
+            return response()->json('valid');
+        } else {
+            return response()->json('invalid', 404);
+        }
     }
 }

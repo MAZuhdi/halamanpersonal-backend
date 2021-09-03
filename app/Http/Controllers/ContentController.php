@@ -173,8 +173,15 @@ class ContentController extends Controller
      * @param  \App\Models\Content  $content
      * @return \Illuminate\Http\Response
      */
-    public function edit(Content $content)
+    public function edit($slug)
     {
+        $content = Content::where('slug', $slug)->first();
+
+        return response()->json([
+            'status' => 'Ok',
+            'message' => 'Here is profile detail for edit purpose',
+            'data' => "$content"
+        ])
     }
 
     /**
@@ -230,17 +237,6 @@ class ContentController extends Controller
         }
 
         $content->save();
-
-        // $updatedContent = [
-        //     'type' => $validated['type'],
-        //     'username' => $validated['username'],
-        //     'title' => $validated['title'],
-        //     'slug' => $newSlug,
-        //     'subtitle' => $validated['subtitle'],
-        //     'desc' => $validated['desc'],
-        //     'img' => $validated['img'],
-        // ];
-        // // dd(Content::where('slug', $slug)->first());
 
         return response()->json($content, 200);
     }

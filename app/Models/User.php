@@ -30,6 +30,7 @@ class User extends Authenticatable
         'linkedin',
         'github',
         'theme_id',
+        'headline'
     ];
 
     /**
