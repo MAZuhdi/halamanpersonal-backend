@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\UserController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,20 +24,24 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 //Auth
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('user.register');
+Route::post('/tokenvalidity', [AuthController::class, 'tokenvalidity'])->name('token.validity');
 
 //Must be guarded routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::put('/user', [AuthController::class, 'update']);
+    Route::delete('/user', [AuthController::class, 'destroy']);
     Route::post('/contents', [ContentController::class, 'store']);
     Route::delete('/contents/{slug}', [ContentController::class, 'destroy']);
     Route::put('/contents/{slug}', [ContentController::class, 'update']);
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::delete('/{username}', [AuthController::class, 'destroy']);
+    
 });
 
 //We Need reserved Username such as user, contents
 //Public routes
+Route::get('/users', [UserController::class, 'getUsers']);
 Route::get('/{username}', [UserController::class, 'index'])->name('user.get');
 Route::get('/{username}/socmed', [UserController::class, 'getSocmed'])->name('socmed.get');
 Route::get('/{username}/contents', [ContentController::class, 'index'])->name('content.get.all');
