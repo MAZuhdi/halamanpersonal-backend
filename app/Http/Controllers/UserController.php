@@ -23,6 +23,16 @@ class UserController extends Controller
         return view('create-user');
     }
 
+    public function getUsers()
+    {
+        $users = User::orderByDesc('created_at')->get();
+
+        return response()->json([
+            'message' => 'All user of our web',
+            'data' => $users
+        ], 200);
+    }
+
     public function getsocmed($username)
     {
         $user = User::where('username', $username)->first();
