@@ -181,7 +181,7 @@ class ContentController extends Controller
             'status' => 'Ok',
             'message' => 'Here is profile detail for edit purpose',
             'data' => "$content"
-        ])
+        ]);
     }
 
     /**
@@ -198,7 +198,7 @@ class ContentController extends Controller
         if (is_null($content)) {
             return response()->json([
                 'status' => 'error',
-                'message' => "$slug content tidak ditemukan"
+                'message' => "$slug content not found"
             ], 404);
         }
 
