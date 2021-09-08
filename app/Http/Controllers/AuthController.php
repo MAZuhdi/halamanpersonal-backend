@@ -49,53 +49,70 @@ class AuthController extends Controller
 
         $user = $request->user();
 
-        $user->name = $request['name'];
-        $user->username = $request['username'];
-        $user->email = $request['email'];
-        $user->password = bcrypt($request['password']);
-        $user->introduction = $request['introduction'];
-        $user->theme_id = $request['theme_id'];
-        $user->headline = $request['headline'];
-        $user->more_info = $request['more_info'];
-    
-        if ($request['facebook']) {
-            $user->facebook = "https://facebook.com/".$request['facebook'];
-        } else {
-            $user->facebook = $request['facebook'];
-        }
-
-        if ($request['instagram']) {
-            $user->instagram = "https://instagram.com/".$request['instagram'];
-        } else {
-            $user->instagram = $request['instagram'];
-        }
-
-        if ($request['linkedin']) {
-            $user->linkedin = "https://linkedin.com/in/".$request['linkedin'];
-        } else {
-            $user->linkedin = $request['linkedin'];
-        }
-
-        if ($request['github']) {
-            $user->github = "https://github.com/".$request['github'];
-        } else {
-            $user->github = $request['github'];
+        if (is_null($user)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "User not found"
+            ], 404);
         }
         
-        if ($uploadedPhoto = $request->file('photo')) {
-            $destinationPath = 'images/profile/';
-            $imageName = $request->username.'.'.time().'.'.$uploadedPhoto->extension();  
-            $uploadedPhoto->move(public_path($destinationPath), $imageName);
-            $user->photo = $destinationPath.$imageName;
+        if (Hash::check($request['password'], $user->password)) {
+            return response('success');
+            $user->name = $request['name'];
+            $user->username = $request['username'];
+            $user->email = $request['email'];
+            $user->password = bcrypt($request['password']);
+            $user->introduction = $request['introduction'];
+            $user->theme_id = $request['theme_id'];
+            $user->headline = $request['headline'];
+            $user->more_info = $request['more_info'];
+        
+            if ($request['facebook']) {
+                $user->facebook = "https://facebook.com/".$request['facebook'];
+            } else {
+                $user->facebook = $request['facebook'];
+            }
+
+            if ($request['instagram']) {
+                $user->instagram = "https://instagram.com/".$request['instagram'];
+            } else {
+                $user->instagram = $request['instagram'];
+            }
+
+            if ($request['linkedin']) {
+                $user->linkedin = "https://linkedin.com/in/".$request['linkedin'];
+            } else {
+                $user->linkedin = $request['linkedin'];
+            }
+
+            if ($request['github']) {
+                $user->github = "https://github.com/".$request['github'];
+            } else {
+                $user->github = $request['github'];
+            }
+            
+            if ($uploadedPhoto = $request->file('photo')) {
+                $destinationPath = 'images/profile/';
+                $imageName = $request->username.'.'.time().'.'.$uploadedPhoto->extension();  
+                $uploadedPhoto->move(public_path($destinationPath), $imageName);
+                $user->photo = $destinationPath.$imageName;
+            }
+
+            $user->save();
+
+            return response()->json([
+                'status' => 'succes',
+                'message' => 'Profile updated',
+                'data' => "$user"
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Password not match'
+            ]);
         }
 
-        $user->save();
-
-        return response()->json([
-            'status' => 'succes',
-            'message' => 'profile updated',
-            'data' => "$user"
-        ]);
+        
     }
 
     public function login(Request $request)
@@ -109,7 +126,7 @@ class AuthController extends Controller
         $user = User::where('email', $validated['email'])->first();
         if (!$user || !Hash::check($validated['password'], $user['password'])) {
             return response()->json([
-                'message' => 'Bad Credentials'
+                'message' => 'Bad credentials'
             ],401);
         }
 
@@ -128,7 +145,7 @@ class AuthController extends Controller
         auth()->user()->tokens()->delete();
 
         return response()->json([
-            'message' => 'Logged Out',
+            'message' => 'Logged out',
         ], 200);
     }
 
