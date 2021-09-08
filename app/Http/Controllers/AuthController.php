@@ -57,7 +57,6 @@ class AuthController extends Controller
         }
         
         if (Hash::check($request['password'], $user->password)) {
-            return response('success');
             $user->name = $request['name'];
             $user->username = $request['username'];
             $user->email = $request['email'];
@@ -66,30 +65,10 @@ class AuthController extends Controller
             $user->theme_id = $request['theme_id'];
             $user->headline = $request['headline'];
             $user->more_info = $request['more_info'];
-        
-            if ($request['facebook']) {
-                $user->facebook = "https://facebook.com/".$request['facebook'];
-            } else {
-                $user->facebook = $request['facebook'];
-            }
-
-            if ($request['instagram']) {
-                $user->instagram = "https://instagram.com/".$request['instagram'];
-            } else {
-                $user->instagram = $request['instagram'];
-            }
-
-            if ($request['linkedin']) {
-                $user->linkedin = "https://linkedin.com/in/".$request['linkedin'];
-            } else {
-                $user->linkedin = $request['linkedin'];
-            }
-
-            if ($request['github']) {
-                $user->github = "https://github.com/".$request['github'];
-            } else {
-                $user->github = $request['github'];
-            }
+            $user->facebook = $request['facebook'];
+            $user->instagram = $request['instagram'];
+            $user->linkedin = $request['linkedin'];
+            $user->github = $request['github'];
             
             if ($uploadedPhoto = $request->file('photo')) {
                 $destinationPath = 'images/profile/';
