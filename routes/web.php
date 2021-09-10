@@ -19,4 +19,3 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/create-user', [UserController::class, 'show'])->name('create-user');
