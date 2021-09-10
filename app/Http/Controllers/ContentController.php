@@ -50,18 +50,18 @@ class ContentController extends Controller
      */
     public function index($username)
     {
-
         if ($this->invalidUsername($username)) {
             return response([
                 'status' => 'not found',
-                'message' => 'Username not Found'], 404);
+                'message' => 'Username not Found'
+                ], 404);
         }
 
         $contents = Content::where('username', $username)->get();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'get data contents berhasil',
+            'message' => "All content of $username",
             'data' => $contents,
         ]);
     }
@@ -83,7 +83,7 @@ class ContentController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => "get data $type berhasil",
+            'message' => "All content of $username under $type type",
             'data' => $contents,
         ]);
     }
@@ -114,10 +114,18 @@ class ContentController extends Controller
         ]);
 
         $slug = Str::of($validated['title'])->slug('-');
-        // $randomnum = random_int(1000,9999);
         $randomnum = $this->randomNumber(4);
-
         $slug = $slug . "-" . $randomnum;
+
+        $existing = Content::where('slug', $slug)->first();
+
+
+        while ($existing) {
+            $slug = Str::of($validated['title'])->slug('-');
+            $randomnum = $this->randomNumber(4);
+            $slug = $slug . "-" . $randomnum;
+            $existing = Content::where('slug', $slug)->first();
+        }
 
         $type = $request['type'];
 
@@ -141,7 +149,7 @@ class ContentController extends Controller
 
         $content->save();
 
-        return response($content, 201);
+        return response()->json($content, 201);
     }
 
     /**
@@ -162,7 +170,7 @@ class ContentController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => "Konten $slug berhasil didapat",
+            'message' => "$slug content detail",
             'data' => $content
         ]);
     }
@@ -179,7 +187,7 @@ class ContentController extends Controller
 
         return response()->json([
             'status' => 'Ok',
-            'message' => 'Here is profile detail for edit purpose',
+            'message' => 'Here is content detail for edit purpose',
             'data' => "$content"
         ]);
     }
@@ -211,29 +219,19 @@ class ContentController extends Controller
             'img'   => 'string',
         ]);
 
-        $newSlug = Str::of($validated['title'])->slug('-');
-        $randomnum = $this->randomNumber(4);
-
-        $newSlug = $newSlug . "-" . $randomnum;
-
-        $type = $request['type'];
+        $type = $validated['type'];
         
-        $content = Content::where('slug', $slug)->first();
-
         $content->type = $validated['type'];
         $content->username= $validated['username'];
         $content->title= $validated['title'];
-        $content->slug= $slug;
         $content->subtitle= $validated['subtitle'];
         $content->desc= $validated['desc'];
 
         if ($uploadedImg = $request->file('img')) {
             $destinationPath = "images/$type/";
-            $imageName = $slug.'.'.$uploadedImg->extension();
+            $imageName = $content->$slug.'.'.$uploadedImg->extension();
             $uploadedImg->move(public_path($destinationPath), $imageName);
             $content->img = $destinationPath.$imageName;
-        } else {
-            $content->photo = "images/$type/photoPlaceholder.jpg";
         }
 
         $content->save();
@@ -253,7 +251,7 @@ class ContentController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => "$slug has been deleted"
+            'message' => "$slug content has been deleted"
         ]);
     }
 }
