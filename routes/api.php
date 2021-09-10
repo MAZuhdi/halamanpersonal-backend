@@ -40,6 +40,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/contents', [ContentController::class, 'store']);
     Route::delete('/contents/{slug}', [ContentController::class, 'destroy']);
     Route::put('/contents/{slug}', [ContentController::class, 'update']);
+
+});
+
+//Admin only
+Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
     //Types
     Route::post('/types', [TypeController::class, 'store']);
     Route::delete('/types/{id}', [TypeController::class, 'destroy']);
