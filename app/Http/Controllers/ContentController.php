@@ -142,7 +142,7 @@ class ContentController extends Controller
             $destinationPath = "images/$type/";
             $imageName = $slug.'.'.$uploadedImg->extension();
             $uploadedImg->move(public_path($destinationPath), $imageName);
-            $content->img = $destinationPath.$imageName;
+            $content->img = $imageName;
         } else {
             $content->photo = "images/$type/photoPlaceholder.jpg";
         }
