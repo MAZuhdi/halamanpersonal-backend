@@ -31,42 +31,35 @@ Route::post('/tokenvalidity', [AuthController::class, 'tokenvalidity'])->name('t
 //Must be guarded routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
     //Auth
-    Route::put('/user', [AuthController::class, 'update']);
-    Route::delete('/user', [AuthController::class, 'destroy']);
-    // Route::put('/users', [AuthController::class, 'update']);
-    // Route::delete('/users', [AuthController::class, 'destroy']);
+    Route::put('/users', [AuthController::class, 'update']);
+    Route::delete('/users', [AuthController::class, 'destroy']);
     Route::post('/logout', [AuthController::class, 'logout']);
     //Contents
     Route::post('/contents', [ContentController::class, 'store']);
     Route::delete('/contents/{slug}', [ContentController::class, 'destroy']);
     Route::put('/contents/{slug}', [ContentController::class, 'update']);
-
 });
 
 //Admin only
 Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
     //Types
+    Route::delete('/users/{username}', [AuthController::class, 'destroybyUsername']);
     Route::post('/types', [TypeController::class, 'store']);
     Route::delete('/types/{id}', [TypeController::class, 'destroy']);
     Route::put('/types/{id}', [TypeController::class, 'update']);
 });
 
-//We Need reserved Username such as user, contents
 //Public routes
 
 Route::get('/types', [TypeController::class, 'index']);
+Route::get('/types/{username}', [TypeController::class, 'userIndex']);
 Route::get('/users', [UserController::class, 'getUsers']);
-Route::get('/{username}', [UserController::class, 'index'])->name('user.get');
-Route::get('/{username}/socmed', [UserController::class, 'getSocmed'])->name('socmed.get');
-Route::get('/{username}/contents', [ContentController::class, 'index'])->name('content.get.all');
-Route::get('/{username}/{type}/{slug}', [ContentController::class, 'show'])->name('content.get.slug');
-Route::get('/{username}/{type}', [ContentController::class, 'listing'])->name('content.get.bytype');
+Route::get('/user/{username}', [UserController::class, 'index'])->name('user.get');
+Route::get('/user/{username}/socmed', [UserController::class, 'getSocmed'])->name('socmed.get');
+Route::get('/contents/{username}', [ContentController::class, 'index'])->name('content.get.all');
+Route::get('/contents/{username}/{type}', [ContentController::class, 'listing'])->name('content.get.bytype');
+Route::get('/contents/{username}/{type}/{slug}', [ContentController::class, 'show'])->name('content.get.slug');
 
-// Route::get('user/{username}', [UserController::class, 'index'])->name('user.get');
-// Route::get('user/{username}', [UserController::class, 'getSocmed'])->name('socmed.get');
-// Route::get('user/{username}/contents', [ContentController::class, 'index'])->name('content.get.all');
-// Route::get('user/{username}/{type}/{slug}', [ContentController::class, 'show'])->name('content.get.slug');
-// Route::get('user/{username}/{type}', [ContentController::class, 'listing'])->name('content.get.bytype');
 
 
 
