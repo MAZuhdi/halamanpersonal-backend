@@ -11,6 +11,22 @@ class UserController extends Controller
     {
         $user = User::where('username', $username)->first();
 
+        if (!$user) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => "$username not found",
+                'data' => null
+            ]);
+        }
+
+        if ($user->more_info == null) {
+            $user->more_info = '';
+        }
+
+        if ($user->introduction == null) {
+            $user->introduction = '';
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => "$username detailed profile",
@@ -25,10 +41,10 @@ class UserController extends Controller
 
     public function getUsers()
     {
-        $users = User::orderByDesc('created_at')->get();
-
+        $users = User::inRandomOrder()->limit(5)->get();
+        
         return response()->json([
-            'message' => 'All user of our web',
+            'message' => '5 Random Users of our web',
             'data' => $users
         ], 200);
     }
