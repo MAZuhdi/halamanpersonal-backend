@@ -74,7 +74,7 @@ class AuthController extends Controller
                 $destinationPath = 'images/profile/';
                 $imageName = $request->username.'.'.time().'.'.$uploadedPhoto->extension();  
                 $uploadedPhoto->move(public_path($destinationPath), $imageName);
-                $user->photo = $destinationPath.$imageName;
+                $user->photo = $imageName;
             }
 
             $user->save();
@@ -105,6 +105,7 @@ class AuthController extends Controller
         $user = User::where('email', $validated['email'])->first();
         if (!$user || !Hash::check($validated['password'], $user['password'])) {
             return response()->json([
+                'status' => 'failed',
                 'message' => 'Bad credentials'
             ],401);
         }
@@ -124,6 +125,7 @@ class AuthController extends Controller
         auth()->user()->tokens()->delete();
 
         return response()->json([
+            'status' => 'success',
             'message' => 'Logged out',
         ], 200);
     }
@@ -133,18 +135,50 @@ class AuthController extends Controller
         $user = $request->user();
         $username = $user->username;
 
+        if (Hash::check($request['password'], $user->password)) {
+            if ($user->photo != 'images/profile/photoPlaceholder.jpg') {
+                unlink(public_path($user->photo));
+            }
+
+            auth()->user()->tokens()->delete();
+
+            $user->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => "$username has been deleted"
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Bad credentials'
+            ],401);
+        }
+    }
+
+    public function destroybyUsername($username)
+    {
+        $user = User::where('username', $username);
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => "$username not found"
+            ], 404);
+        }
+
         if ($user->photo != 'images/profile/photoPlaceholder.jpg') {
             unlink(public_path($user->photo));
         }
 
+        $user->tokens()->delete();
+        
         $user->delete();
 
         return response()->json([
             'status' => 'success',
             'message' => "$username has been deleted"
         ]);
-
-
     }
 
     public function tokenValidity(Request $request)
