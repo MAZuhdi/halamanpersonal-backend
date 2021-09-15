@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Type;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TypeController extends Controller
 {
@@ -43,13 +44,13 @@ class TypeController extends Controller
     {
         $type = new Type;
 
-        $type->type_name = $request['type_name'];
+        $type->name = $request['name'];
 
         $type->save();
 
         return response()->json([
             'status' => 'success',
-            'message' => "$type->type_name added"
+            'message' => "$type->name added"
         ], 201);
     }
 
@@ -85,13 +86,13 @@ class TypeController extends Controller
     public function update(Request $request, $id)
     {
         $type = Type::find($id);
-        $type->type_name = $request['type_name'];
+        $type->name = $request['name'];
 
         $type->save();
 
         return response()->json([
             'status' => 'success',
-            'message' => "$type->type_name updated"
+            'message' => "$type->name updated"
         ]);
     }
 
@@ -116,5 +117,28 @@ class TypeController extends Controller
             'status' => 'success',
             'message' => 'type deleted'
         ]);
+    }
+
+    public function userIndex($username)
+    {
+        $types = DB::table('contents')
+                    ->where('username', $username)
+                    ->distinct('type')
+                    ->pluck('type');
+
+        if (count($types) == 0) {
+            return response()->json([
+                'status' => 'success',
+                'message' => "types for $username not found",
+                'data' => strval('NULL')
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'success',
+                'message' => "here is the types used by $username ",
+                'data' => $types
+            ]);
+        }
+        
     }
 }
