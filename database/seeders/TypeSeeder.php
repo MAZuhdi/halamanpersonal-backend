@@ -16,16 +16,16 @@ class TypeSeeder extends Seeder
     public function run()
     {
         Type::create([
-            'type_name' => 'Education'
+            'name' => 'Education'
         ]);
         Type::create([
-            'type_name' => 'Portfolio'
+            'name' => 'Portfolio'
         ]);
         Type::create([
-            'type_name' => 'Completion'
+            'name' => 'Completion'
         ]);
         Type::create([
-            'type_name' => 'Experience'
+            'name' => 'Experience'
         ]);
     }
 }

@@ -44,7 +44,6 @@ class AuthController extends Controller
             'name' => 'required',
             'username' => 'required',
             'email' => 'required|string|email',
-            'password' => 'required|string',
         ]);
 
         $user = $request->user();
@@ -60,7 +59,6 @@ class AuthController extends Controller
             $user->name = $request['name'];
             $user->username = $request['username'];
             $user->email = $request['email'];
-            $user->password = bcrypt($request['password']);
             $user->introduction = $request['introduction'];
             $user->theme_id = $request['theme_id'];
             $user->headline = $request['headline'];
@@ -82,7 +80,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'succes',
                 'message' => 'Profile updated',
-                'data' => "$user"
+                'data' => $user
             ]);
         } else {
             return response()->json([
