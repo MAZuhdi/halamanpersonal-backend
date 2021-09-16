@@ -55,41 +55,35 @@ class AuthController extends Controller
             ], 404);
         }
         
-        if (Hash::check($request['password'], $user->password)) {
-            $user->name = $request['name'];
-            $user->username = $request['username'];
-            $user->email = $request['email'];
-            $user->introduction = $request['introduction'];
-            $user->theme_id = $request['theme_id'];
-            $user->headline = $request['headline'];
-            $user->more_info = $request['more_info'];
-            $user->facebook = $request['facebook'];
-            $user->instagram = $request['instagram'];
-            $user->linkedin = $request['linkedin'];
-            $user->github = $request['github'];
-            
-            if ($uploadedPhoto = $request->file('photo')) {
-                $destinationPath = 'images/profile/';
-                $imageName = $request->username.'.'.time().'.'.$uploadedPhoto->extension();  
-                $uploadedPhoto->move(public_path($destinationPath), $imageName);
-                $user->photo = $imageName;
-            }
-
-            $user->save();
-
-            return response()->json([
-                'status' => 'succes',
-                'message' => 'Profile updated',
-                'data' => $user
-            ]);
-        } else {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Password not match'
-            ]);
+        if ($request['password'] != null) {
+            $user->password = bcrypt($request['password']);
+        }
+        $user->name = $request['name'];
+        $user->username = $request['username'];
+        $user->email = $request['email'];
+        $user->introduction = $request['introduction'];
+        $user->theme_id = $request['theme_id'];
+        $user->headline = $request['headline'];
+        $user->more_info = $request['more_info'];
+        $user->facebook = $request['facebook'];
+        $user->instagram = $request['instagram'];
+        $user->linkedin = $request['linkedin'];
+        $user->github = $request['github'];
+        
+        if ($uploadedPhoto = $request->file('photo')) {
+            $destinationPath = 'images/profile/';
+            $imageName = $request->username.'.'.time().'.'.$uploadedPhoto->extension();  
+            $uploadedPhoto->move(public_path($destinationPath), $imageName);
+            $user->photo = $imageName;
         }
 
-        
+        $user->save();
+
+        return response()->json([
+            'status' => 'succes',
+            'message' => 'Profile updated',
+            'data' => $user
+        ]);
     }
 
     public function login(Request $request)
