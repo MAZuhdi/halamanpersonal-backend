@@ -107,11 +107,14 @@ class ContentController extends Controller
     {
         $validated = $request->validate([
             'type' => 'required',
-            'username' => 'required',
             'title' => 'required',
             'subtitle' => 'string',
             'desc' => 'string',
         ]);
+
+        $user = $request->user();
+
+
 
         $slug = Str::of($validated['title'])->slug('-');
         $randomnum = $this->randomNumber(4);
@@ -132,7 +135,7 @@ class ContentController extends Controller
         $content = new Content;
 
         $content->type = $validated['type'];
-        $content->username= $validated['username'];
+        $content->username= $user->username;
         $content->title= $validated['title'];
         $content->slug= $slug;
         $content->subtitle= $validated['subtitle'];
@@ -144,7 +147,7 @@ class ContentController extends Controller
             $uploadedImg->move(public_path($destinationPath), $imageName);
             $content->img = $imageName;
         } else {
-            $content->photo = "images/$type/photoPlaceholder.jpg";
+            $content->img = "images/placeholder/photoPlaceholder.jpg";
         }
 
         $content->save();

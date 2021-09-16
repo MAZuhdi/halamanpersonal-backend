@@ -75,8 +75,9 @@ class AuthController extends Controller
             $imageName = $request->username.'.'.time().'.'.$uploadedPhoto->extension();  
             $uploadedPhoto->move(public_path($destinationPath), $imageName);
             $user->photo = $imageName;
+        } else {
+            $user->photo = "images/profile/profileplaceholder.jpg";
         }
-
         $user->save();
 
         return response()->json([
