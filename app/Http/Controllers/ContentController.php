@@ -142,8 +142,8 @@ class ContentController extends Controller
         $content->desc= $validated['desc'];
 
         if ($uploadedImg = $request->file('img')) {
-            $destinationPath = "images/$type/";
-            $imageName = $slug.'.'.$uploadedImg->extension();
+            $destinationPath = "images/content-images";
+            $imageName = $type.'-'.$slug.'.'.$uploadedImg->extension();
             $uploadedImg->move(public_path($destinationPath), $imageName);
             $content->img = $imageName;
         } else {
