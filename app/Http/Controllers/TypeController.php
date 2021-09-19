@@ -31,7 +31,6 @@ class TypeController extends Controller
      */
     public function create()
     {
-        
     }
 
     /**
@@ -121,10 +120,18 @@ class TypeController extends Controller
 
     public function userIndex($username)
     {
+        $user = $this->isValidUsername($username);
+        if (!$user) {
+            return response()->json([
+                'status' => 'not found',
+                'message' => "$username not found"
+            ], 404);
+        };
+
         $types = DB::table('contents')
-                    ->where('username', $username)
-                    ->distinct('type')
-                    ->pluck('type');
+            ->where('username', $username)
+            ->distinct('type')
+            ->pluck('type');
 
         if (count($types) == 0) {
             return response()->json([
@@ -139,6 +146,5 @@ class TypeController extends Controller
                 'data' => $types
             ]);
         }
-        
     }
 }
