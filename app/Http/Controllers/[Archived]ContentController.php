@@ -9,6 +9,23 @@ use Illuminate\Support\Str;
 
 class ContentController extends Controller
 {
+
+    /**
+     * Return Boolean which username is exist or not, if exist return false
+     *
+     * @param  str $username
+     * @return bool
+     */
+    public function invalidUsername($username)
+    {
+        $user = User::where('username', $username)->get();
+        if ($user->isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Return random number of with pre-defined length.
      *
@@ -33,13 +50,12 @@ class ContentController extends Controller
      */
     public function index($username)
     {
-        $user = $this->isValidUsername($username);
-        if (!$user) {
-            return response()->json([
+        if ($this->invalidUsername($username)) {
+            return response([
                 'status' => 'not found',
-                'message' => "$username not found"
+                'message' => 'Username not Found'
             ], 404);
-        };
+        }
 
         $contents = Content::where('username', $username)->get();
 
@@ -58,20 +74,8 @@ class ContentController extends Controller
      */
     public function listing($username, $type)
     {
-        $user = $this->isValidUsername($username);
-        if (!$user) {
-            return response()->json([
-                'status' => 'not found',
-                'message' => "$username not found"
-            ], 404);
-        };
-
-        $type = $this->isValidType($type);
-        if (!$type) {
-            return response()->json([
-                'status' => 'not found',
-                'message' => "invalid $type"
-            ], 404);
+        if ($this->invalidUsername($username)) {
+            return response('Username not Found', 404);
         }
 
         $contents = Content::where('username', $username)
@@ -110,7 +114,14 @@ class ContentController extends Controller
 
         $user = $request->user();
 
-        $existing = "true";
+
+
+        $slug = Str::of($validated['title'])->slug('-');
+        $randomnum = $this->randomNumber(4);
+        $slug = $slug . "-" . $randomnum;
+
+        $existing = Content::where('slug', $slug)->first();
+
 
         while ($existing) {
             $slug = Str::of($validated['title'])->slug('-');
@@ -129,12 +140,15 @@ class ContentController extends Controller
         $content->slug = $slug;
         $content->subtitle = $validated['subtitle'];
         $content->desc = $validated['desc'];
-        if ($request['img']) {
-            $content->img = $request['img'];
-        } else {
-            $content->img = "https://dummyimage.com/852x480/15748f/ffffff&text=$slug";
-        }
 
+        if ($uploadedImg = $request->file('img')) {
+            $destinationPath = "images/content-images";
+            $imageName = $type . '-' . $slug . '.' . $uploadedImg->extension();
+            $uploadedImg->move(public_path($destinationPath), $imageName);
+            $content->img = $imageName;
+        } else {
+            $content->img = "images/placeholder/photoPlaceholder.jpg";
+        }
 
         $content->save();
 
@@ -149,32 +163,13 @@ class ContentController extends Controller
      */
     public function show($username, $type, $slug)
     {
-        $user = $this->isValidUsername($username);
-        if (!$user) {
-            return response()->json([
-                'status' => 'not found',
-                'message' => "$username not found"
-            ], 404);
-        };
-
-        $type = $this->isValidType($type);
-        if (!$type) {
-            return response()->json([
-                'status' => 'not found',
-                'message' => "invalid $type"
-            ], 404);
+        if ($this->invalidUsername($username)) {
+            return response()->json('Username not Found', 404);
         }
 
         $content = Content::where('username', $username)
-            ->where('type', $type->name)
+            ->where('type', $type)
             ->where('slug', $slug)->first();
-
-        if (!$content) {
-            return response()->json([
-                'status' => 'not found',
-                'message' => "$slug not found"
-            ], 404);
-        }
 
         return response()->json([
             'status' => 'success',
@@ -235,8 +230,11 @@ class ContentController extends Controller
         $content->subtitle = $validated['subtitle'];
         $content->desc = $validated['desc'];
 
-        if ($request['img']) {
-            $content->img = $request['img'];
+        if ($uploadedImg = $request->file('img')) {
+            $destinationPath = "images/$type/";
+            $imageName = $content->$slug . '.' . $uploadedImg->extension();
+            $uploadedImg->move(public_path($destinationPath), $imageName);
+            $content->img = $destinationPath . $imageName;
         }
 
         $content->save();
