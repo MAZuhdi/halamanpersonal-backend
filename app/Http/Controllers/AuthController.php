@@ -27,7 +27,12 @@ class AuthController extends Controller
         $user->username = $request['username'];
         $user->email = $request['email'];
         $user->password = bcrypt($request['password']);
-        
+
+        $firstNameChar = strtoupper($user->name[0]);
+        $user->photo = "https://dummyimage.com/150/15748f/ffffff&text=$firstNameChar";
+
+        dd($user->photo);
+
         $user->save();
 
         $token = $user->createToken('myapptoken')->plainTextToken;
@@ -54,7 +59,7 @@ class AuthController extends Controller
                 'message' => "User not found"
             ], 404);
         }
-        
+
         if ($request['password'] != null) {
             $user->password = bcrypt($request['password']);
         }
@@ -69,19 +74,17 @@ class AuthController extends Controller
         $user->instagram = $request['instagram'];
         $user->linkedin = $request['linkedin'];
         $user->github = $request['github'];
-        
-        if ($uploadedPhoto = $request->file('photo')) {
-            $destinationPath = 'images/profile/';
-            $imageName = $request->username.'.'.time().'.'.$uploadedPhoto->extension();  
-            $uploadedPhoto->move(public_path($destinationPath), $imageName);
-            $user->photo = $imageName;
-        } else {
-            $user->photo = "images/profile/profileplaceholder.jpg";
+
+        $firstNameChar = strtoupper($user->name[0]);
+
+        if ($request['photo']) {
+            $user->photo = $request['photo'];
         }
+
         $user->save();
 
         return response()->json([
-            'status' => 'succes',
+            'status' => 'success',
             'message' => 'Profile updated',
             'data' => $user
         ]);
@@ -100,7 +103,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'failed',
                 'message' => 'Bad credentials'
-            ],401);
+            ], 401);
         }
 
         $token = $user->createToken('myapptoken')->plainTextToken;
@@ -145,7 +148,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'failed',
                 'message' => 'Bad credentials'
-            ],401);
+            ], 401);
         }
     }
 
@@ -160,12 +163,12 @@ class AuthController extends Controller
             ], 404);
         }
 
-        if ($user->photo != 'images/profile/photoPlaceholder.jpg') {
-            unlink(public_path($user->photo));
-        }
+        // if ($user->photo != 'images/profile/photoPlaceholder.jpg') {
+        //     unlink(public_path($user->photo));
+        // }
 
         $user->tokens()->delete();
-        
+
         $user->delete();
 
         return response()->json([
@@ -182,8 +185,8 @@ class AuthController extends Controller
         $hashedToken = hash('sha256', $token);
 
         $valid = DB::table('personal_access_tokens')
-                ->where('token', "=", $hashedToken)
-                ->get();
+            ->where('token', "=", $hashedToken)
+            ->get();
 
         if ($hashedToken == $valid->token) {
             return response()->json('valid');
