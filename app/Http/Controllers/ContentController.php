@@ -66,8 +66,8 @@ class ContentController extends Controller
             ], 404);
         };
 
-        $type = $this->isValidType($type);
-        if (!$type) {
+        $queried_type = $this->isValidType($type);
+        if (!$queried_type) {
             return response()->json([
                 'status' => 'not found',
                 'message' => "invalid $type"
@@ -119,8 +119,6 @@ class ContentController extends Controller
             $existing = Content::where('slug', $slug)->first();
         }
 
-        $type = $request['type'];
-
         $content = new Content;
 
         $content->type = $validated['type'];
@@ -134,7 +132,6 @@ class ContentController extends Controller
         } else {
             $content->img = "https://dummyimage.com/852x480/15748f/ffffff&text=$slug";
         }
-
 
         $content->save();
 
@@ -157,8 +154,8 @@ class ContentController extends Controller
             ], 404);
         };
 
-        $type = $this->isValidType($type);
-        if (!$type) {
+        $queried_type = $this->isValidType($type);
+        if (!$queried_type) {
             return response()->json([
                 'status' => 'not found',
                 'message' => "invalid $type"
@@ -166,7 +163,7 @@ class ContentController extends Controller
         }
 
         $content = Content::where('username', $username)
-            ->where('type', $type->name)
+            ->where('type', $type)
             ->where('slug', $slug)->first();
 
         if (!$content) {
@@ -226,8 +223,6 @@ class ContentController extends Controller
             'desc' => 'string',
             'img'   => 'string',
         ]);
-
-        $type = $validated['type'];
 
         $content->type = $validated['type'];
         $content->username = $validated['username'];
