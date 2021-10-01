@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -45,8 +46,8 @@ Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
     //Types
     Route::delete('/users/{username}', [AuthController::class, 'destroybyUsername']);
     Route::post('/types', [TypeController::class, 'store']);
-    Route::delete('/types/{id}', [TypeController::class, 'destroy']);
     Route::put('/types/{id}', [TypeController::class, 'update']);
+    Route::delete('/types/{id}', [TypeController::class, 'destroy']);
 });
 
 //Public routes
@@ -59,7 +60,3 @@ Route::get('/user/{username}/socmed', [UserController::class, 'getSocmed'])->nam
 Route::get('/contents/{username}', [ContentController::class, 'index'])->name('content.get.all');
 Route::get('/contents/{username}/{type}', [ContentController::class, 'listing'])->name('content.get.bytype');
 Route::get('/contents/{username}/{type}/{slug}', [ContentController::class, 'show'])->name('content.get.slug');
-
-
-
-

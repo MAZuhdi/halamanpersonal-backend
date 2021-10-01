@@ -24,6 +24,12 @@ class TypeController extends Controller
         ]);
     }
 
+    public function indexweb()
+    {
+        $types = Type::orderBy("created_at", "desc")->get();
+        return view('type.show-type', compact("types"));
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -31,6 +37,7 @@ class TypeController extends Controller
      */
     public function create()
     {
+        return view('type.create-type');
     }
 
     /**
@@ -44,6 +51,9 @@ class TypeController extends Controller
         $type = new Type;
 
         $type->name = $request['name'];
+        $type->headline = $request['headline'];
+        $type->desc = $request['desc'];
+        $type->icon = $request['icon'];
 
         $type->save();
 
@@ -70,9 +80,10 @@ class TypeController extends Controller
      * @param  \App\Models\Type  $type
      * @return \Illuminate\Http\Response
      */
-    public function edit(Type $type)
+    public function edit($id)
     {
-        //
+        $type = Type::find($id);
+        return view('type.edit-type', compact('type'));
     }
 
     /**
@@ -85,7 +96,20 @@ class TypeController extends Controller
     public function update(Request $request, $id)
     {
         $type = Type::find($id);
-        $type->name = $request['name'];
+
+        if ($request['name']) {
+            $type->name = $request['name'];
+        }
+        if ($request['headline']) {
+            $type->headline = $request['headline'];
+        }
+        if ($request['desc']) {
+            $type->desc = $request['desc'];
+        }
+        if ($request['icon']) {
+            $type->icon = $request['icon'];
+        }
+
 
         $type->save();
 
@@ -93,6 +117,36 @@ class TypeController extends Controller
             'status' => 'success',
             'message' => "$type->name updated"
         ]);
+    }
+
+    /**
+     * Update the specified resource in storage. (for web)
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Type  $type
+     * @return \Illuminate\Http\Response
+     */
+    public function updateweb(Request $request, $id)
+    {
+        $type = Type::find($id);
+
+        if ($request['name']) {
+            $type->name = $request['name'];
+        }
+        if ($request['headline']) {
+            $type->headline = $request['headline'];
+        }
+        if ($request['desc']) {
+            $type->desc = $request['desc'];
+        }
+        if ($request['icon']) {
+            $type->icon = $request['icon'];
+        }
+
+
+        $type->save();
+
+        return redirect(route('type.index'));
     }
 
     /**

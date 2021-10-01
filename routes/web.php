@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TypeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,4 +19,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
+});
 
+//Types
+Route::get('/types', [TypeController::class, 'indexweb'])->name('type.index');
+Route::get('/types/create', [TypeController::class, 'create']);
+Route::get('/types/{id}/edit', [TypeController::class, 'edit']);
+
+Route::post('/types', [TypeController::class, 'store'])->name('type.create');
+Route::put('/types/{id}', [TypeController::class, 'updateweb'])->name('type.update');
+Route::delete('/types/{id}', [TypeController::class, 'destroy'])->name('type.delete');
