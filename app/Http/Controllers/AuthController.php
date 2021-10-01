@@ -45,13 +45,13 @@ class AuthController extends Controller
 
     public function update(Request $request)
     {
+        $user = $request->user();
+
         $validated = $request->validate([
             'name' => 'required',
-            'username' => 'required',
-            'email' => 'required|string|email',
+            'username' => 'required|unique:users,username,' . $user->id,
+            'email' => 'required|string|unique:users,email,' . $user->id,
         ]);
-
-        $user = $request->user();
 
         if (is_null($user)) {
             return response()->json([
