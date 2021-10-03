@@ -8,6 +8,9 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Str;
 
 
 class AuthController extends Controller
@@ -30,8 +33,6 @@ class AuthController extends Controller
 
         $firstNameChar = strtoupper($user->name[0]);
         $user->photo = "https://dummyimage.com/150/15748f/ffffff&text=$firstNameChar";
-
-        dd($user->photo);
 
         $user->save();
 
@@ -175,6 +176,54 @@ class AuthController extends Controller
             'status' => 'success',
             'message' => "$username has been deleted"
         ]);
+    }
+
+    public function resetRequest(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with(['status' => __($status)])
+            : back()->withErrors(['email' => __($status)]);
+    }
+
+    public function reset($token, Request $request)
+    {
+        $request->token = $token;
+
+        $request->request->add(['token' => $token]);
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->setRememberToken(Str::random(60));
+
+                $user->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+        return $status === Password::PASSWORD_RESET
+            ? response()->json([
+                'status' => 'success',
+                'message' => "password updated | $status"
+            ])
+            : response()->json([
+                'status' => 'failed',
+                'message' => "password cannot be updated | $status"
+            ]);
     }
 
     public function tokenValidity(Request $request)

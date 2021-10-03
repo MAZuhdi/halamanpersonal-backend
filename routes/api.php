@@ -27,7 +27,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //Auth
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('user.register');
-Route::post('/tokenvalidity', [AuthController::class, 'tokenvalidity'])->name('token.validity');
+Route::post('/token-validity', [AuthController::class, 'tokenvalidity'])->name('token.validity');
+Route::post('/forgot-password', [AuthController::class, 'resetRequest'])->middleware('guest')->name('password.email');
+Route::post('/reset-password/{token}', [AuthController::class, 'reset'])->middleware('guest')->name('password.reset');
 
 //Must be guarded routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
