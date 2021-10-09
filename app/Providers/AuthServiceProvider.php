@@ -27,7 +27,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         ResetPassword::createUrlUsing(function ($user, string $token) {
-            return 'https://halamanpersonal.my.id/reset-password?token=' . $token;
+            return 'https://halamanpersonal.my.id/auth/reset-password/' . $token;
         });
     }
 }
