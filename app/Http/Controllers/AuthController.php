@@ -133,9 +133,9 @@ class AuthController extends Controller
         $username = $user->username;
 
         if (Hash::check($request['password'], $user->password)) {
-            if ($user->photo != 'images/profile/photoPlaceholder.jpg') {
-                unlink(public_path($user->photo));
-            }
+            // if ($user->photo != 'images/profile/photoPlaceholder.jpg') {
+            //     unlink(public_path($user->photo));
+            // }
 
             auth()->user()->tokens()->delete();
 
