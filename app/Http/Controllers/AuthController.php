@@ -168,8 +168,6 @@ class AuthController extends Controller
         //     unlink(public_path($user->photo));
         // }
 
-        $user->tokens()->delete();
-
         $user->delete();
 
         return response()->json([
