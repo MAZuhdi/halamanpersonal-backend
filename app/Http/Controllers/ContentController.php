@@ -224,11 +224,21 @@ class ContentController extends Controller
             'img'   => 'string',
         ]);
 
+        $existing = "true";
+
+        while ($existing) {
+            $slug = Str::of($validated['title'])->slug('-');
+            $randomnum = $this->randomNumber(4);
+            $slug = $slug . "-" . $randomnum;
+            $existing = Content::where('slug', $slug)->first();
+        }
+
         $content->type = $validated['type'];
         $content->username = $validated['username'];
         $content->title = $validated['title'];
         $content->subtitle = $validated['subtitle'];
         $content->desc = $validated['desc'];
+        $content->slug = $slug;
 
         if ($request['img']) {
             $content->img = $request['img'];

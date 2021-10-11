@@ -222,7 +222,7 @@ class AuthController extends Controller
         return $status === Password::PASSWORD_RESET
             ? response()->json([
                 'status' => 'success',
-                'message' => "password updated | $status"
+                'message' => "password updated"
             ])
             : response()->json([
                 'status' => 'failed',
