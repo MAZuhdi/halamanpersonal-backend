@@ -197,6 +197,7 @@ class AuthController extends Controller
 
     public function reset($token, Request $request)
     {
+
         $request->token = $token;
 
         $request->request->add(['token' => $token]);
