@@ -20,7 +20,7 @@
     <h1>List of API of HalamanPersonal.my.id</h1>
 
     <ul>
-        <li><a href="{{url('')}}api/users">{{url('')}}/api/users</a>
+        <li><a href="{{url('')}}/api/users">{{url('')}}/api/users</a>
             <ul>
                 <li>GET</li>
                 <li>POST</li>
@@ -29,53 +29,53 @@
         </li>
 
 
-        <li><a href="{{url('')}}api/user/{username}">{{url('')}}/api/user/{username}</a>**Going to be updated as users/{username} to follow RESTful API rule
+        <li><a href="{{url('')}}/api/user/{username}">{{url('')}}/api/user/{username}</a>**Going to be updated as users/{username} to follow RESTful API rule
             <ul>
                 <li>GET</li>
             </ul>
         </li>
-        <li><a href="{{url('')}}api/user/{username}/socmed">{{url('')}}/api/user/{username}/socmed</a>**Going to be updated as users/{username}/socmed to follow RESTful API rule
+        <li><a href="{{url('')}}/api/user/{username}/socmed">{{url('')}}/api/user/{username}/socmed</a>**Going to be updated as users/{username}/socmed to follow RESTful API rule
             <ul>
                 <li>GET</li>
             </ul>
         </li>
-        <li><a href="{{url('')}}api/types">{{url('')}}/api/types</a>
-            <ul>
-                <li>GET</li>
-            </ul>
-        </li>
-        
-        <li><a href="{{url('')}}api/types/{username}">{{url('')}}/api/types/{username}</a>
+        <li><a href="{{url('')}}/api/types">{{url('')}}/api/types</a>
             <ul>
                 <li>GET</li>
             </ul>
         </li>
         
-        <li><a href="{{url('')}}api/types/{username}">{{url('')}}/api/types/{username}</a>
+        <li><a href="{{url('')}}/api/types/{username}">{{url('')}}/api/types/{username}</a>
             <ul>
                 <li>GET</li>
             </ul>
         </li>
         
-        <li><a href="{{url('')}}api/contents">{{url('')}}/api/contents</a>
+        <li><a href="{{url('')}}/api/types/{username}">{{url('')}}/api/types/{username}</a>
+            <ul>
+                <li>GET</li>
+            </ul>
+        </li>
+        
+        <li><a href="{{url('')}}/api/contents">{{url('')}}/api/contents</a>
             <ul>
                 <li>GET</li>
             </ul>
         </li>
 
-        <li><a href="{{url('')}}api/contents/{username}">{{url('')}}/api/contents/{username}</a>
+        <li><a href="{{url('')}}/api/contents/{username}">{{url('')}}/api/contents/{username}</a>
             <ul>
                 <li>GET</li>
             </ul>
         </li>
 
-        <li><a href="{{url('')}}api/contents/{username}/{type}">{{url('')}}/api/contents/{username}/{type}</a>
+        <li><a href="{{url('')}}/api/contents/{username}/{type}">{{url('')}}/api/contents/{username}/{type}</a>
             <ul>
                 <li>GET</li>
             </ul>
         </li>
         
-        <li><a href="{{url('')}}api/contents/{username}/{type}/{slug}">{{url('')}}/api/contents/{username}/{type}/{slug}</a>
+        <li><a href="{{url('')}}/api/contents/{username}/{type}/{slug}">{{url('')}}/api/contents/{username}/{type}/{slug}</a>
             <ul>
                 <li>GET</li>
             </ul>
