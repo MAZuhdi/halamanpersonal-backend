@@ -19,6 +19,8 @@
 
     <h1>List of API of HalamanPersonal.my.id</h1>
 
+
+    <h2>Resources</h2>
     <ul>
         <li><a href="{{url('')}}/api/users">{{url('')}}/api/users</a>
             <ul>
@@ -29,12 +31,12 @@
         </li>
 
 
-        <li><a href="{{url('')}}/api/user/{username}">{{url('')}}/api/user/{username}</a>**Going to be updated as users/{username} to follow RESTful API rule
+        <li><a href="{{url('')}}/api/user/{username}">{{url('')}}/api/user/{username}</a>
             <ul>
                 <li>GET</li>
             </ul>
         </li>
-        <li><a href="{{url('')}}/api/user/{username}/socmed">{{url('')}}/api/user/{username}/socmed</a>**Going to be updated as users/{username}/socmed to follow RESTful API rule
+        <li><a href="{{url('')}}/api/user/{username}/socmed">{{url('')}}/api/user/{username}/socmed</a>
             <ul>
                 <li>GET</li>
             </ul>
@@ -60,6 +62,7 @@
         <li><a href="{{url('')}}/api/contents">{{url('')}}/api/contents</a>
             <ul>
                 <li>GET</li>
+                <li>POST</li>
             </ul>
         </li>
 
@@ -78,10 +81,29 @@
         <li><a href="{{url('')}}/api/contents/{username}/{type}/{slug}">{{url('')}}/api/contents/{username}/{type}/{slug}</a>
             <ul>
                 <li>GET</li>
+                <li>PUT</li>
+                <li>DELETE</li>
             </ul>
         </li>
-       
+    </ul>
 
+    <h2>Auth</h2>
+    <ul>
+        <li><a href="{{url('')}}/api/login">{{url('')}}/api/login</a>
+            <ul>
+                <li>POST, parameter : Email, Password; return User info & Login Bearer Token</li>
+            </ul>
+        </li>
+        <li><a href="{{url('')}}/api/forgot-password">{{url('')}}/api/forgot-password</a>
+            <ul>
+                <li>POST, parameter : Email; return an email containing token to reset password</li>
+            </ul>
+        </li>
+        <li><a href="{{url('')}}/api/reset-password/{token}">{{url('')}}/api/reset-password/{token}</a>
+            <ul>
+                <li>POST, parameter : Email, password, password_confirmation; save the newly entered password</li>
+            </ul>
+        </li>
     </ul>
     <!-- Optional JavaScript; choose one of the two! -->
 
